@@ -364,7 +364,45 @@
     min-width:0;
     min-height:0;
     display:flex;
+    flex-direction:column;
+    gap:3px;
   }
+  /* STOP 후 최근 10초 파형 탐색 바 */
+  .hist-bar{
+    flex:none;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:5px;
+    padding:3px 4px 1px;
+    font-family:var(--mono);
+    font-size:10px;
+    color:var(--text-dim);
+  }
+  .hist-bar button{
+    flex:none;
+    height:20px;
+    min-width:26px;
+    padding:0 6px;
+    border:1px solid var(--bezel-line);
+    border-radius:4px;
+    background:var(--bezel-2);
+    color:var(--text);
+    cursor:pointer;
+    font-family:var(--mono);
+    font-size:10px;
+  }
+  .hist-bar button:hover:not(:disabled){ border-color:var(--amber); color:var(--amber); }
+  .hist-bar button:disabled{ opacity:.35; cursor:default; }
+  .hist-bar input[type=range]{ flex:1 1 200px; min-width:60px; height:18px; accent-color:var(--amber); margin:0; }
+  .hist-bar input[type=range]:disabled{ opacity:.35; }
+  .hist-bar .hist-lbl{ flex:none; min-width:190px; text-align:right; white-space:nowrap; }
+  .hist-bar .hist-opts{ display:flex; align-items:center; gap:8px; margin-left:auto; color:var(--text-dim); }
+  .hist-bar .hist-opts label{ display:flex; align-items:center; gap:3px; white-space:nowrap; cursor:pointer; }
+  .hist-bar .hist-opts select{ height:20px; padding:0 2px; font-family:var(--mono); font-size:10px; }
+  .hist-bar .hist-opts input[type=checkbox]{ margin:0; accent-color:var(--amber); }
+  .hist-bar.live .hist-lbl{ color:var(--text-dimmer); }
+  .hist-bar:not(.live) .hist-lbl{ color:var(--amber); }
   .side-rail{
     width:clamp(190px, 19vw, 250px);
     flex:none;
@@ -373,6 +411,18 @@
     flex-direction:column;
     overflow:hidden;
   }
+  .rail-notice{
+    flex:none;
+    margin-top:auto;
+    padding:8px 10px;
+    border-top:1px solid var(--bezel-line);
+    font-size:9.2px;
+    line-height:1.55;
+    color:var(--text-dimmer);
+    word-break:keep-all;
+  }
+  .rail-notice b{ color:var(--text-dim); font-weight:700; }
+  .rail-notice a{ color:var(--text-dim); text-decoration:underline; }
   .fit-inner{
     transform-origin:top left;
     display:flex;
@@ -528,6 +578,18 @@
   .ycur-grid .chn{ font-weight:800; white-space:nowrap; }
   .ycur-grid .val{ font-weight:600; text-align:right; white-space:nowrap; }
   .ycur-grid .empty{ grid-column:1 / -1; color:var(--text-dimmer); }
+  .meas-grid{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:3px 4px;
+    font-family:var(--mono);
+    font-size:9.3px;
+    align-items:center;
+  }
+  .meas-grid .hd{ font-size:.93em; font-weight:800; text-align:right; white-space:nowrap; }
+  .meas-grid .lbl{ color:var(--text-dimmer); font-size:.87em; white-space:nowrap; }
+  .meas-grid .val{ font-weight:600; text-align:right; white-space:nowrap; }
+  .meas-grid .empty{ grid-column:1 / -1; color:var(--text-dimmer); }
   .check{
     display:flex; align-items:center; gap:6px; font-size:9.3px; color:var(--text-dim);
   }
@@ -900,6 +962,42 @@
   .side-rail{ width:clamp(158px, 12.5vw, 196px); }
   #btnPanelFold{ display:none; }
   #btnPanelFold.show{ display:inline-block; }
+
+  /* ===== 교수 모드 > 오실로스코프 연습 모드 전용: 좌측 패널 정리 (다른 시험모드에는 영향 없음) ===== */
+  #srcPanel.practice-mode #mathHint,
+  #srcPanel.practice-mode .ch-card [data-role="specHint"],
+  #srcPanel.practice-mode #chCards + .hint{ display:none !important; }
+
+  /* 연습 파형 선택: 칩 형태, 선택 시 강조 */
+  #srcPanel.practice-mode #practiceCheckGrid{ gap:3px 4px !important; margin:4px 0 6px !important; }
+  #srcPanel.practice-mode #practiceCheckGrid label{
+    padding:2px 5px; border:1px solid var(--bezel-line); border-radius:5px; background:var(--bezel-1);
+    transition:border-color .12s, background .12s, color .12s;
+  }
+  #srcPanel.practice-mode #practiceCheckGrid label:hover{ border-color:var(--amber-dim); }
+  #srcPanel.practice-mode #practiceCheckGrid label:has(input:checked){
+    border-color:var(--amber); color:var(--amber); background:rgba(232,163,61,.13); font-weight:700;
+  }
+  #srcPanel.practice-mode #practiceCheckGrid input{ accent-color:var(--amber); }
+
+  /* 채널 배정 목록: 구분선 대신 얇은 줄 카드 */
+  #srcPanel.practice-mode #practiceAssigned > div{
+    border-top:none !important; margin-bottom:2px; padding:2px 6px !important;
+    background:var(--bezel-1); border-radius:5px;
+  }
+
+  /* 노이즈·수학 연산: 라벨과 입력을 한 줄로 */
+  #srcPanel.practice-mode #practicePanel .field,
+  #srcPanel.practice-mode #mathBox .field{ flex-direction:row; align-items:center; justify-content:space-between; gap:6px; }
+  #srcPanel.practice-mode #practicePanel .field{ margin-top:4px !important; }
+  #srcPanel.practice-mode #practicePanel .field label,
+  #srcPanel.practice-mode #mathBox .field label{ white-space:nowrap; margin:0; }
+  #srcPanel.practice-mode #practiceNoise{ width:64px; flex:none; text-align:right; }
+  #srcPanel.practice-mode #mathBox .field select{ flex:1; min-width:0; }
+
+  /* 우측 패널(커서·자동측정 카드)이 패널 폭을 넘어 잘리지 않도록: 열 최소폭 제한 + 카드 안쪽에 가둠 */
+  .bottom-grid{ grid-template-columns:minmax(0,1fr); }
+  .side-rail .readout-card{ min-width:0; overflow:hidden; }
 </style>
 </head>
 <body>
@@ -1015,10 +1113,9 @@
           <div id="practiceCheckGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:4px 8px;margin:6px 0 8px;"></div>
           <div id="practiceAssigned"></div>
           <div class="field" style="margin-top:8px;">
-            <label>노이즈 세기 일괄 설정 (선택된 모든 연습파형, 기본 0.16)</label>
+            <label title="선택된 모든 연습파형에 일괄 적용 (기본 0.16)">노이즈 세기 (일괄)</label>
             <input type="number" id="practiceNoise" min="0" step="0.01" value="0.16">
           </div>
-          <div class="hint">체크한 파형이 A→B→C→D 순서로 채널에 자동 배정됩니다. 각 파형마다 유니폴라/바이폴라 극성을 개별 선택할 수 있고, 아래 채널 카드에서 전압범위·주파수·듀티를 추가로 조정할 수 있습니다.</div>
         </div>
       </div>
       <div id="engRpmPanel" style="display:none;">
@@ -1056,7 +1153,7 @@
       </div>
       </div>
       <p class="panel-title" style="margin-top:16px;">수학모델 설정 (A·B 채널 연산 → M채널)</p>
-      <div class="test-select-box">
+      <div class="test-select-box" id="mathBox">
         <div class="field">
           <label>수학 연산 선택</label>
           <select id="mathOp">
@@ -1155,16 +1252,6 @@
         <div class="group g-meas">
           <label class="check" title="시간 커서(T1/T2) 표시"><input type="checkbox" id="showXCursor" checked> X커서</label>
           <label class="check" title="전압 커서(V1/V2) 표시"><input type="checkbox" id="showYCursor" checked> Y커서</label>
-          <div class="field">
-            <label title="자동측정 기준 채널 (Y커서는 켜져 있는 모든 채널에 각각 표시)">측정 채널</label>
-            <select id="measCh">
-              <option value="A">A채널</option>
-              <option value="B">B채널</option>
-              <option value="C">C채널</option>
-              <option value="D">D채널</option>
-              <option value="M">M채널(수학)</option>
-            </select>
-          </div>
         </div>
       </div>
 
@@ -1176,6 +1263,22 @@
               <span class="status-pill" id="trigStatus">UNTRIG</span>
               <span class="status-pill" id="modeStatus">OVERLAY</span>
             </div>
+          </div>
+          <div class="hist-bar live" id="histBar" title="STOP 후 최근 기록 구간을 분석합니다.&#10;←/→ : 1 DIV · Alt+←/→ : 0.1 DIV · Shift+←/→ : 1화면 · Home/End : 처음/최신&#10;마우스 휠(화면·이 바 위) : 1 DIV, Shift+휠 : 0.1 DIV · 버튼은 누르고 있으면 반복 이동">
+            <button type="button" id="histPageL" title="1화면(10 DIV) 앞으로 · Shift+←">◀◀</button>
+            <button type="button" id="histStepL" title="1 DIV 앞으로 · ←">◀</button>
+            <button type="button" id="histFineL" title="0.1 DIV 앞으로 (미세) · Alt+←">‹</button>
+            <input type="range" id="histSlider" min="0" max="1" step="any" value="1" disabled>
+            <button type="button" id="histFineR" title="0.1 DIV 뒤로 (미세) · Alt+→">›</button>
+            <button type="button" id="histStepR" title="1 DIV 뒤로 · →">▶</button>
+            <button type="button" id="histPageR" title="1화면(10 DIV) 뒤로 · Shift+→">▶▶</button>
+            <button type="button" id="histLatest" title="정지 시점(가장 최근)으로 이동 · End">최신 ⏭</button>
+            <span class="hist-lbl" id="histLbl">RUN 중 · 버퍼 0.0/10 s</span>
+            <span class="hist-opts">
+              <label title="STOP 후 되돌아볼 수 있는 시간 (교수 PC 설정이 학생 PC에도 반영됨)">보관 <select id="histSec"><option value="10" selected>10초</option><option value="30">30초</option><option value="60">60초</option></select></label>
+              <label title="체크하면 STOP→RUN 할 때마다 이전 기록을 비우고 새로 기록합니다"><input type="checkbox" id="histResetRun" checked> RUN 시 초기화</label>
+              <button type="button" id="histClear" title="지금까지의 기록을 지우고 이 시점부터 다시 기록">기록 지움</button>
+            </span>
           </div>
         </div>
 
@@ -1198,17 +1301,17 @@
               <div class="ycur-grid" id="yCurGrid"><div class="empty">-</div></div>
             </div>
             <div class="readout-card">
-              <h3>자동 측정 (선택 채널, <span id="autoUnitLabel">전압</span>)</h3>
-              <div class="readout-grid">
-                <div class="lbl">Max</div><div class="val" id="mMax">-</div>
-                <div class="lbl">Min</div><div class="val" id="mMin">-</div>
-                <div class="lbl">Avg</div><div class="val" id="mAvg">-</div>
-                <div class="lbl">Freq</div><div class="val" id="mFreq">-</div>
-                <div class="lbl">Vpp</div><div class="val" id="mVpp">-</div>
-                <div class="lbl">Duty</div><div class="val" id="mDuty">-</div>
-              </div>
+              <h3>자동 측정 (켜진 모든 채널)</h3>
+              <div class="meas-grid" id="measGrid"><div class="empty">-</div></div>
+            </div>
             </div>
           </div>
+         <div class="rail-notice">
+           <b>이용 안내</b><br>
+           본 프로그램은 교육·실습 목적으로 제작되었으며, 무단 복제·배포 및 상업적 이용은 제한됩니다. 상업적 이용을 원하시는 경우 사전에 아래 연락처로 문의해 주시면 감사하겠습니다.<br>
+           문의: <a href="mailto:eculee@daelim.ac.kr">eculee@daelim.ac.kr</a><br>
+           ⓒ 2026 대림대학교 미래자동차공학부. All rights reserved.
+         </div>
          </div>
         </div>
       </div>
@@ -1255,6 +1358,20 @@
         <input type="text" id="infoDept" class="pw-input" style="letter-spacing:normal;" placeholder="예) 미래자동차공학부">
       </div>
       <div class="field">
+        <label>학년</label>
+        <select id="infoGrade" class="pw-input" style="letter-spacing:normal;">
+          <option value="">선택</option>
+          <option value="1학년">1학년</option>
+          <option value="2학년">2학년</option>
+          <option value="3학년">3학년</option>
+          <option value="4학년">4학년</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>반</label>
+        <input type="text" id="infoClass" class="pw-input" style="letter-spacing:normal;" placeholder="예) 1 또는 A">
+      </div>
+      <div class="field">
         <label>학번</label>
         <input type="text" id="infoStudentId" class="pw-input" style="letter-spacing:normal;" placeholder="예) 20261234">
       </div>
@@ -1265,6 +1382,10 @@
       <div class="field full">
         <label>교과목명</label>
         <input type="text" id="infoSubject" class="pw-input" style="letter-spacing:normal;" placeholder="예) 전자제어엔진">
+      </div>
+      <div class="field full">
+        <label>담당교수명</label>
+        <input type="text" id="infoProfessor" class="pw-input" style="letter-spacing:normal;" placeholder="예) 김교수">
       </div>
       <div class="field">
         <label>년도</label>
@@ -1342,6 +1463,9 @@
   const STUDENT_INFO_KEY = "dllc_vscope_student_info_v1";
   const infoOverlay = document.getElementById("infoOverlay");
   const infoDept = document.getElementById("infoDept");
+  const infoGrade = document.getElementById("infoGrade");
+  const infoClass = document.getElementById("infoClass");
+  const infoProfessor = document.getElementById("infoProfessor");
   const infoStudentId = document.getElementById("infoStudentId");
   const infoName = document.getElementById("infoName");
   const infoSubject = document.getElementById("infoSubject");
@@ -1370,7 +1494,7 @@
   function renderStudentInfoLine(){
     const info = loadStudentInfo();
     if(info){
-      studentInfoLine.innerHTML = `소속: ${escHtml(info.dept)} · 학번: ${escHtml(info.studentId)} · 이름: ${escHtml(info.name)} · 과목: ${escHtml(info.subject)} · ${escHtml(info.year)}년 ${escHtml(info.semester)} <button id="editStudentInfoBtn" type="button">정보수정</button><button id="resetStudentInfoBtn" type="button">초기화</button>`;
+      studentInfoLine.innerHTML = `소속: ${escHtml(info.dept)}${info.grade?` · ${escHtml(info.grade)}`:""}${info.cls?` ${escHtml(info.cls)}반`:""} · 학번: ${escHtml(info.studentId)} · 이름: ${escHtml(info.name)} · 과목: ${escHtml(info.subject)}${info.professor?` (${escHtml(info.professor)} 교수)`:""} · ${escHtml(info.year)}년 ${escHtml(info.semester)} <button id="editStudentInfoBtn" type="button">정보수정</button><button id="resetStudentInfoBtn" type="button">초기화</button>`;
       const editBtn = document.getElementById("editStudentInfoBtn");
       if(editBtn) editBtn.addEventListener("click", ()=> openInfoOverlay(true));
       const resetBtn = document.getElementById("resetStudentInfoBtn");
@@ -1392,6 +1516,9 @@
     infoOverlayIsEdit = !!isEdit;
     const info = loadStudentInfo();
     infoDept.value = info ? info.dept : "";
+    infoGrade.value = info && info.grade ? info.grade : "";
+    infoClass.value = info && info.cls ? info.cls : "";
+    infoProfessor.value = info && info.professor ? info.professor : "";
     infoStudentId.value = info ? info.studentId : "";
     infoName.value = info ? info.name : "";
     infoSubject.value = info ? info.subject : "";
@@ -1407,17 +1534,20 @@
   }
   function trySaveInfo(){
     const dept = infoDept.value.trim();
+    const grade = infoGrade.value.trim();
+    const cls = infoClass.value.trim().replace(/반$/,"").trim();
+    const professor = infoProfessor.value.trim();
     const studentId = infoStudentId.value.trim();
     const name = infoName.value.trim();
     const subject = infoSubject.value.trim();
     const year = infoYear.value.trim();
     const semester = infoSemester.value.trim();
-    if(!dept || !studentId || !name || !subject || !year || !semester){
+    if(!dept || !grade || !cls || !studentId || !name || !subject || !professor || !year || !semester){
       infoError.classList.add("show");
       return;
     }
     infoError.classList.remove("show");
-    saveStudentInfo({dept, studentId, name, subject, year, semester});
+    saveStudentInfo({dept, grade, cls, studentId, name, subject, professor, year, semester});
     renderStudentInfoLine();
     closeInfoOverlay();
     if(!infoOverlayIsEdit){
@@ -1486,6 +1616,11 @@
   renderStudentInfoLine();
   if(!loadStudentInfo()){
     openRoleOverlay(); // 최초 실행: 교수자/학생 선택부터 진행
+  } else {
+    const _saved = loadStudentInfo();
+    if(!_saved.grade || !_saved.cls || !_saved.professor){
+      openInfoOverlay(true); // 이전 버전에서 저장한 학생: 학년/반/담당교수 보완 입력 (취소 가능)
+    }
   }
 
   /* ---------------- Waveform presets ---------------- */
@@ -1710,6 +1845,29 @@
   /* CVVT(연속가변밸브타이밍): 흡기캠 진각(+) / 배기캠 지각(+)을 크랭크각(°CA) 단위로 ICMP·ECMP 위상에 반영.
      cur* 는 목표값을 향해 일정 속도(°CA/s)로 이동하는 현재 위상 → 캠 엣지가 크랭크(CKP) 대비 서서히 이동 */
   const CVVT = {on:false, int:20, exh:20, crk:10, rate:30, curInt:0, curExh:0, curCrk:0};   // crk: 크랭크축(CKP) 위치 이동량(°CA, 지각 방향)
+  /* 최근 10초 기록/재생: 파형은 시간의 함수이므로 STOP 후 sweepStart만 과거로 옮겨도 동일 파형이 재현된다.
+     시간에 따라 변하는 CVVT 현재 위상(curInt/curExh/curCrk)만 프레임마다 기록해 두었다가 과거 구간 재생 시 복원한다. */
+  let HIST_SEC = 10;                 // 보관 시간(초): 10/30/60 선택
+  const HIST_LOG_KEEP = 61;          // CVVT 위상 기록은 선택 가능한 최대 시간(60초)+여유만큼 항상 유지
+  const REPLAY = { log:[], snap:[], on:false, varies:false, prev:null, stopClock:0, startSweep:0, live:null, lo:0, hi:0,
+                   validFrom:0,      // 이 시각 이전 기록은 무효(설정 변경·RUN 초기화·기록 지움)
+                   sig:"", setSig:null, sigN:0,
+                   pendingRel:null, remoteRel:null, remoteSec:null };   // 교수 PC 스크롤 위치 수신용
+  function histInvalidate(){ REPLAY.validFrom = state.masterClock; REPLAY.log.length = 0; REPLAY.sig = ""; }
+  function cvvtReplay(t){            // 시각 t의 CVVT 위상을 기록에서 선형보간
+    const L = REPLAY.snap, n = L.length; if(!n) return;
+    let r0, r1, u = 0;
+    if(t <= L[0][0]){ r0 = r1 = L[0]; }
+    else if(t >= L[n-1][0]){ r0 = r1 = L[n-1]; }
+    else{
+      let a = 0, b = n-1;
+      while(b-a > 1){ const m = (a+b)>>1; if(L[m][0] <= t) a = m; else b = m; }
+      r0 = L[a]; r1 = L[b]; u = (t-r0[0])/Math.max(1e-9, r1[0]-r0[0]);
+    }
+    CVVT.curInt = r0[1] + (r1[1]-r0[1])*u;
+    CVVT.curExh = r0[2] + (r1[2]-r0[2])*u;
+    CVVT.curCrk = r0[3] + (r1[3]-r0[3])*u;
+  }
   let engRpmUser = null;                      // 1-7·1-8 엔진 RPM(A·B·C 일괄) — 미지정 시 기준값 750
   let camMidUser = {};                        // 교수자가 설정한 ICMP/ECMP 중심전압(V) — 시험조건을 바꿔도 유지
   let ckpCenterUser = null;                   // 교수자가 설정한 CKP 중심전압(V) — 시험조건을 바꿔도 유지
@@ -1925,6 +2083,7 @@
     return v;
   }
   function sampleVoltage(cfg, t){
+    if(REPLAY.on) cvvtReplay(t);
     const g = cfg.gen;
     if(g && cfg.idle && !GEN_CLK.bypass && (g.mode==="auto" || g.mode==="manual")){
       const tw = t + GEN_CLK.off;
@@ -3373,6 +3532,7 @@
     });
   });
   function setPracticeModeUI(isPractice){
+    const _sp = document.getElementById("srcPanel"); if(_sp) _sp.classList.toggle("practice-mode", !!isPractice);   // 연습 모드 전용 패널 스타일
     practicePanel.style.display = isPractice ? "block":"none";
     testItemWrap.style.display = isPractice ? "none":"flex";
     testCondWrap.style.display = isPractice ? "none":"flex";
@@ -3502,6 +3662,7 @@
     }
   }
   function applyTestSelection(){
+    histInvalidate();                      // 시험항목이 바뀌면 이전 기록 무효
     const cat = TEST_DEFS[testCategorySel.value];
     const test = cat && cat.tests[testItemSel.value];
     if(!test) return;
@@ -3558,9 +3719,6 @@
   if(!TEST_DEFS[testCategorySel.value].practice) applyTestSelection();
 
   /* ---------------- Trigger / timebase / measurement channel selects ---------------- */
-  ["trigSrc","measCh"].forEach(idName=>{
-    const sel = document.getElementById(idName);
-  });
 
   document.getElementById("dispMode").addEventListener("change", e=>{
     state.dispMode = e.target.value;
@@ -3650,7 +3808,6 @@
   document.getElementById("engRpm").addEventListener("input", e=>{ const R = parseFloat(e.target.value); if(R>0) applyEngineRpmAll(R, ""); });
   cvvtCrkEl.addEventListener("input", ()=>{ CVVT.crk = clampNum(cvvtCrkEl.value,0,60,0); });
   cvvtRateEl.addEventListener("input", ()=>{ CVVT.rate = clampNum(cvvtRateEl.value,1,200,30); });
-  document.getElementById("measCh").addEventListener("change", e=> state.measCh = e.target.value);
   document.getElementById("showXCursor").addEventListener("change", e=> state.showXCursor = e.target.checked);
   document.getElementById("showYCursor").addEventListener("change", e=> state.showYCursor = e.target.checked);
 
@@ -3692,7 +3849,8 @@
     const studentBlock = `
       <table class="rp-tbl">
         <tr><td class="k">소속학과</td><td>${info?D(info.dept):""}</td><td class="k">학번</td><td>${info?D(info.studentId):""}</td></tr>
-        <tr><td class="k">이름</td><td>${info?D(info.name):""}</td><td class="k">교과목명</td><td>${info?D(info.subject):""}</td></tr>
+        <tr><td class="k">학년/반</td><td>${info&&info.grade?`${D(info.grade)} ${D(info.cls)}반`:""}</td><td class="k">이름</td><td>${info?D(info.name):""}</td></tr>
+        <tr><td class="k">교과목명</td><td>${info?D(info.subject):""}</td><td class="k">담당교수</td><td>${info?D(info.professor):""}</td></tr>
         <tr><td class="k">년도/학기</td><td colspan="3">${info?`${D(info.year)}년 ${D(info.semester)}`:""}</td></tr>
       </table>`;
 
@@ -3883,7 +4041,8 @@
     outerEl.style.overflowX = "hidden";
     if(window.matchMedia("(max-width:980px)").matches) return;
     let naturalH = innerEl.scrollHeight;
-    const availH = outerEl.clientHeight;
+    const noticeEl = outerEl.querySelector(".rail-notice");
+    const availH = outerEl.clientHeight - (noticeEl ? noticeEl.offsetHeight + 6 : 0);
     if(naturalH<=1 || availH<=1) return;
     let scale = Math.min(1, availH/naturalH);
     let clamped = false;
@@ -3911,7 +4070,7 @@
   }
   window.addEventListener("resize", fitAllPanels);
   new MutationObserver(fitAllPanels).observe(srcPanelInner, {childList:true, subtree:true});
-  new MutationObserver(fitAllPanels).observe(sideRailInner, {childList:true, subtree:true});
+  new MutationObserver(fitAllPanels).observe(document.getElementById("chanStrip"), {childList:true, subtree:true});
 
   const INSTRUCTOR_DEFAULT_VDIV = 2;   // 교수모드 A·B·C·D·M 채널 Volts/DIV 기준값(V)
   function applyPanelDefaultScale(voltsDiv, posDiv){
@@ -4089,6 +4248,8 @@
       running: state.running,
       math: { op: channels.M.wave.op, on: channels.M.on },
       cvvt: { on: CVVT.on, int: CVVT.int, exh: CVVT.exh, crk: CVVT.crk, rate: CVVT.rate },
+      histSec: HIST_SEC,             // 보관 시간(10/30/60초)
+      hist: (!state.running && REPLAY.prev===false) ? { rel: Math.round((state.sweepStart-REPLAY.stopClock)*1e6)/1e6 } : null,   // STOP 중 스크롤 위치(정지 시점 기준 초)
       pollInterval: syncCfg.interval // 교수가 설정한 주기를 학생 PC에 함께 방송
     };
   }
@@ -4159,6 +4320,13 @@
       const btn = document.getElementById("runStop");
       btn.textContent = state.running ? "■ RUN":"▶ STOP";
       btn.classList.toggle("stopped", !state.running);
+    }
+    // 교수 PC의 기록 보관 시간·스크롤 위치(정지 시점 기준 상대값)를 학생 PC에 반영
+    if(currentMode==="student"){
+      if(data.histSec!=null && data.histSec!==REPLAY.remoteSec){ REPLAY.remoteSec = data.histSec; setHistSec(data.histSec); }
+      const rel = (data.hist && typeof data.hist.rel==="number") ? data.hist.rel : null;
+      if(rel===null){ REPLAY.remoteRel = null; REPLAY.pendingRel = null; }
+      else if(rel!==REPLAY.remoteRel){ REPLAY.remoteRel = rel; REPLAY.pendingRel = rel; }
     }
     // 교수가 방송한 동기화 주기를 학생 PC가 자동 반영 (학생이 직접 수정한 경우는 제외)
     if(currentMode==="student" && !intervalTouchedByUser && data.pollInterval!=null){
@@ -4438,6 +4606,7 @@
       const tC = CVVT.on?CVVT.crk:0;
       CVVT.curCrk += Math.max(-stp, Math.min(stp, tC-CVVT.curCrk));
     }
+    histTick();
     if((cvvtFrame++ % 6)===0){
       setTxt("cvvtStatus", (CVVT.on?"CVVT 작동":"CVVT 정지")+`: 흡기 진각 ${CVVT.curInt.toFixed(1)}°CA / 배기 지각 ${CVVT.curExh.toFixed(1)}°CA / 크랭크 이동 ${CVVT.curCrk.toFixed(1)}°CA`);
     }
@@ -4463,10 +4632,144 @@
       }
     }
 
+    updateHistBar(windowSpan);
     renderScope(windowSpan);
     updateCursorReadouts(windowSpan);
     if((measFrame++ % 4)===0) updateAutoMeasure(windowSpan);   // 자동측정(400샘플)은 약 15Hz면 충분
+    if(REPLAY.on) restoreLiveCvvt();                           // 과거 재생 중 임시로 바꾼 CVVT 값을 정지 시점 값으로 복원
   }
+
+  /* ---------------- 최근 N초 기록 / STOP 후 스크롤 분석 ---------------- */
+  const $h = id=>document.getElementById(id);
+  const histBar = $h("histBar"), histSlider = $h("histSlider"), histLbl = $h("histLbl"),
+        histSecSel = $h("histSec"), histResetRun = $h("histResetRun"),
+        histBtns = ["histPageL","histStepL","histFineL","histFineR","histStepR","histPageR","histLatest"].map($h);
+  function restoreLiveCvvt(){
+    const L = REPLAY.live; if(!L) return;
+    CVVT.curInt = L.i; CVVT.curExh = L.e; CVVT.curCrk = L.c;
+  }
+  // 신호에 영향을 주는 설정의 서명 — 바뀌면 이전 기록은 현재 설정과 달라지므로 무효 처리 (수동 '파형 발생' 시각은 제외)
+  function histSettingsSig(){
+    const chs = ALL_IDS.map(id=>{ const c = channels[id]; return [c.on, c.presetKey, c.testSignal, c.testCond, c.wave]; });
+    return JSON.stringify([chs, engRpmUser, camMidUser, ckpCenterUser, knockFreqUser, knockAmpUser, knockBiasUser, ftpsPUser, ectsTempUser],
+                          (k,v)=> k==="triggers" ? undefined : v);
+  }
+  function histTick(){
+    const wasStopped = (REPLAY.prev === false);
+    if(state.running){
+      if(REPLAY.on){ restoreLiveCvvt(); REPLAY.on = false; }
+      if(wasStopped && histResetRun.checked) histInvalidate();           // STOP → RUN: 이전 기록 초기화
+      const L = REPLAY.log, t = state.masterClock;
+      if(!L.length || L[L.length-1][0] < t) L.push([t, CVVT.curInt, CVVT.curExh, CVVT.curCrk]);
+      while(L.length > 2 && L[1][0] < t - HIST_LOG_KEEP) L.shift();
+      REPLAY.prev = true;
+    } else if(REPLAY.prev !== false){                                    // RUN → STOP 전환 시점(또는 시작 직후 STOP)
+      REPLAY.prev = false;
+      REPLAY.stopClock = state.masterClock;
+      REPLAY.startSweep = state.sweepStart;
+      REPLAY.live = {i:CVVT.curInt, e:CVVT.curExh, c:CVVT.curCrk};
+      REPLAY.snap = REPLAY.log.slice();
+      const S = REPLAY.snap, e = S.length ? S[S.length-1] : null;
+      REPLAY.varies = !!e && S.some(r=> Math.abs(r[1]-e[1])>1e-9 || Math.abs(r[2]-e[2])>1e-9 || Math.abs(r[3]-e[3])>1e-9);
+      REPLAY.on = REPLAY.varies;                                         // CVVT가 움직인 경우에만 위상 복원 사용
+    }
+    if((REPLAY.sigN++ % 3)===0){                                         // 설정 변경 감지(약 20Hz)
+      const sg = histSettingsSig();
+      if(REPLAY.setSig!==null && sg!==REPLAY.setSig) histInvalidate();
+      REPLAY.setSig = sg;
+    }
+  }
+  function histRange(windowSpan){
+    const hi = Math.max(REPLAY.startSweep, REPLAY.stopClock - windowSpan);
+    const lo = Math.min(hi, Math.max(0, REPLAY.validFrom, REPLAY.stopClock - HIST_SEC));
+    REPLAY.lo = lo; REPLAY.hi = hi;
+    return [lo, hi];
+  }
+  function updateHistBar(windowSpan){
+    if(state.running){
+      const buf = Math.max(0, Math.min(HIST_SEC, state.masterClock - REPLAY.validFrom));
+      const sig = "run|" + HIST_SEC + "|" + buf.toFixed(1);
+      if(sig !== REPLAY.sig){
+        REPLAY.sig = sig;
+        histBar.classList.add("live");
+        histSlider.disabled = true; histBtns.forEach(b=>b.disabled = true);
+        histSlider.min = 0; histSlider.max = 1; histSlider.value = 1;
+        histLbl.textContent = "RUN 중 · 버퍼 " + buf.toFixed(1) + "/" + HIST_SEC + " s";
+      }
+      return;
+    }
+    if(REPLAY.pendingRel !== null){                                      // 교수 PC가 보낸 스크롤 위치(정지 시점 기준 상대값) 적용
+      state.sweepStart = REPLAY.stopClock + REPLAY.pendingRel;
+      REPLAY.pendingRel = null;
+    }
+    const [lo, hi] = histRange(windowSpan);
+    state.sweepStart = Math.min(hi, Math.max(lo, state.sweepStart));
+    const can = (hi - lo) > 1e-9;
+    const d = windowSpan < 0.01 ? 5 : 3;
+    const rs = state.sweepStart - REPLAY.stopClock, re = rs + windowSpan;
+    const sig = ["stop", HIST_SEC, lo, hi, state.sweepStart, windowSpan].join("|");
+    if(sig === REPLAY.sig) return;
+    REPLAY.sig = sig;
+    histBar.classList.remove("live");
+    histSlider.disabled = !can; histBtns.forEach(b=>b.disabled = !can);
+    histSlider.min = lo; histSlider.max = can ? hi : lo + 1;
+    histSlider.value = state.sweepStart;
+    histLbl.textContent = (can ? "" : "기록 구간 없음 · ") + "정지 시점 기준 " + rs.toFixed(d) + " ~ " + re.toFixed(d) + " s";
+  }
+  function histSet(v){
+    if(state.running) return;
+    state.sweepStart = Math.min(REPLAY.hi, Math.max(REPLAY.lo, v));
+    REPLAY.sig = "";
+  }
+  function histStep(mult){ histSet(state.sweepStart + mult*state.timeDiv); }   // mult: DIV 단위 (1=1DIV, 0.1=미세, 10=1화면)
+  function setHistSec(v){
+    v = +v;
+    if(v!==10 && v!==30 && v!==60) return;
+    HIST_SEC = v; histSecSel.value = String(v); REPLAY.sig = "";
+  }
+
+  // 버튼: 누르고 있으면 반복 이동
+  function histBindHold(id, mult){
+    const btn = $h(id); let dly = null, rep = null;
+    const stop = ()=>{ clearTimeout(dly); clearInterval(rep); dly = rep = null; };
+    btn.addEventListener("pointerdown", e=>{
+      if(btn.disabled) return;
+      e.preventDefault(); stop(); histStep(mult);
+      dly = setTimeout(()=>{ rep = setInterval(()=>histStep(mult), 50); }, 400);
+    });
+    ["pointerup","pointerleave","pointercancel","blur"].forEach(ev=>btn.addEventListener(ev, stop));
+    btn.addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); histStep(mult); } });
+  }
+  histBindHold("histPageL", -DIVS_X); histBindHold("histStepL", -1); histBindHold("histFineL", -0.1);
+  histBindHold("histFineR",  0.1);    histBindHold("histStepR",  1); histBindHold("histPageR",  DIVS_X);
+  $h("histLatest").addEventListener("click", ()=> histSet(REPLAY.hi));
+  histSlider.addEventListener("input", ()=> histSet(parseFloat(histSlider.value)));
+
+  // 키보드(STOP 상태): ←/→ 1DIV, Alt+←/→ 0.1DIV, Shift+←/→ 1화면, Home/End 처음/최신
+  document.addEventListener("keydown", e=>{
+    if(state.running || e.ctrlKey || e.metaKey) return;
+    const tg = e.target;
+    if(tg && tg!==histSlider && (tg.tagName==="SELECT" || tg.tagName==="TEXTAREA" || tg.isContentEditable ||
+        (tg.tagName==="INPUT" && tg.type!=="checkbox" && tg.type!=="button"))) return;
+    if(document.querySelector(".pw-overlay.show")) return;
+    if(e.key==="ArrowLeft" || e.key==="ArrowRight"){
+      e.preventDefault();
+      histStep((e.key==="ArrowLeft" ? -1 : 1) * (e.shiftKey ? DIVS_X : (e.altKey ? 0.1 : 1)));
+    } else if(e.key==="Home"){ e.preventDefault(); histSet(REPLAY.lo); }
+    else if(e.key==="End"){ e.preventDefault(); histSet(REPLAY.hi); }
+  });
+  // 마우스 휠: 화면 위/이 바 위에서 1 DIV, Shift+휠 0.1 DIV
+  function histWheel(e){
+    if(state.running) return;
+    const d = e.deltaY || e.deltaX; if(!d) return;
+    e.preventDefault();
+    histStep((d>0 ? 1 : -1) * (e.shiftKey ? 0.1 : 1));
+  }
+  canvas.addEventListener("wheel", histWheel, {passive:false});
+  histBar.addEventListener("wheel", histWheel, {passive:false});
+
+  histSecSel.addEventListener("change", ()=> setHistSec(histSecSel.value));
+  $h("histClear").addEventListener("click", ()=> histInvalidate());
 
   function timeToX(t, windowSpan){
     return marginL + ((t - state.sweepStart)/windowSpan)*plotW;
@@ -4751,6 +5054,7 @@
     if(key !== yCurRowsKey){
       yCurRowsKey = key; yCurCells = {}; yCurLast = {};
       grid.innerHTML = "";
+      if(typeof fitAllPanels==="function") fitAllPanels();
       if(!act.length){
         const e = document.createElement("div"); e.className="empty"; e.textContent="-"; grid.appendChild(e);
         return;
@@ -4793,11 +5097,10 @@
     return (c>=2 && last>first) ? (c-1)/(last-first) : 0;
   }
 
-  function updateAutoMeasure(windowSpan){
-    const ch = channels[state.measCh];
+  // 한 채널의 화면 구간 자동 측정값 (없으면 null)
+  function measureChannel(ch, windowSpan){
     const N = 400;
-    let mx=-Infinity, mn=Infinity, sum=0;
-    let cnt = 0;
+    let mx=-Infinity, mn=Infinity, sum=0, cnt=0;
     for(let i=0;i<N;i++){
       const t = state.sweepStart + (i/N)*windowSpan;
       const v = sampleVoltage(ch.wave, t);
@@ -4805,17 +5108,7 @@
       cnt++;
       if(v>mx) mx=v; if(v<mn) mn=v; sum+=v;
     }
-    const unit = chUnit(ch);
-    if(cnt===0){
-      ["mMax","mMin","mAvg","mVpp","mFreq","mDuty"].forEach(k=>setTxt(k, "-"));
-      return;
-    }
-    const avg = sum/cnt;
-    setTxt("mMax", fmtVolt(mx, unit));
-    setTxt("mMin", fmtVolt(mn, unit));
-    setTxt("mAvg", fmtVolt(avg, unit));
-    setTxt("mVpp", fmtVolt(mx-mn, unit));
-    setTxt("autoUnitLabel", unit==="A" ? "전류" : "전압");
+    if(cnt===0) return null;
     const accelPeriod = (ch.wave.idleHold||0)+(ch.wave.rise||0)+(ch.wave.wotHold||0)+(ch.wave.fall||0)+((ch.wave.type==="mapevent"||(ch.wave.type==="rps"&&ch.wave.mode==="event"))?(ch.wave.settle||0):0);
     const RPM_DIV2 = ["injPos","injNeg","coilCurrent","ignV","ignI","injpulse"];
     let freq = ch.wave.freq;
@@ -4831,10 +5124,73 @@
       else freq = 0;
     }
     if(ch.id==="M") freq = estimateMathFreq(ch, windowSpan, mx, mn);
-    setTxt("mFreq", freq ? Number(freq).toFixed(2)+" Hz" : "-");
     const dutyVal = ch.wave.duty!=null ? ch.wave.duty : ch.wave.dwellDuty;
-    setTxt("mDuty", (dutyVal!=null && isFinite(dutyVal)) ? Number(dutyVal).toFixed(0)+"%" : "-");
+    return { mx, mn, avg:sum/cnt, vpp:mx-mn, freq:freq||0, duty:(dutyVal!=null && isFinite(dutyVal)) ? dutyVal : null };
   }
+
+  // 자동 측정: 켜져 있는 모든 채널을 열(column)로 나란히 표시
+  const MEAS_ROWS = [["Max","mx"],["Min","mn"],["Avg","avg"],["Freq(Hz)","freq"],["Vpp","vpp"],["Duty(%)","duty"]];
+  let measKey = "", measStopKey = "", measCells = {}, measLast = {};
+  function updateAutoMeasure(windowSpan){
+    const grid = $e("measGrid"); if(!grid) return;
+    const act = activeChList();
+    const key = act.map(id=>id+channels[id].color+chUnit(channels[id])).join("|");
+    if(key !== measKey){                                    // 켜진 채널이 바뀌면 표 다시 구성
+      measKey = key; measStopKey = ""; measCells = {}; measLast = {};
+      grid.innerHTML = "";
+      if(!act.length){
+        const e = document.createElement("div"); e.className = "empty"; e.textContent = "-"; grid.appendChild(e);
+        grid.style.gridTemplateColumns = "";
+        return;
+      }
+      grid.style.gridTemplateColumns = "auto repeat(" + act.length + ",1fr)";
+      const mk = (cls, txt, color)=>{ const d = document.createElement("div"); d.className = cls; d.textContent = txt; if(color) d.style.color = color; grid.appendChild(d); return d; };
+      mk("hd", "");
+      act.forEach(id=> mk("hd", id+"("+chUnit(channels[id])+")", channels[id].color));
+      MEAS_ROWS.forEach(([lbl,k])=>{
+        mk("lbl", lbl);
+        act.forEach(id=>{ measCells[k+id] = mk("val", "-", channels[id].color); });
+      });
+      const sample = (act.length >= 4) ? "-00.00" : "-00.000";   // 가장 긴 값 기준으로 글자 크기를 고정
+      Object.keys(measCells).forEach(k=>{ measCells[k].textContent = sample; });
+      fitMeasGrid(grid);
+      Object.keys(measCells).forEach(k=>{ measCells[k].textContent = "-"; });
+      if(typeof fitAllPanels==="function") fitAllPanels();
+    }
+    if(!act.length) return;
+    if(!state.running){                                     // 정지 중에는 구간·설정이 같으면 다시 계산하지 않음
+      const ck = [state.sweepStart, windowSpan, REPLAY.setSig].join("|");
+      if(ck === measStopKey) return;
+      measStopKey = ck;
+    } else measStopKey = "";
+    const dec = act.length >= 4 ? 2 : 3;
+    let changed = false;
+    const fmtF = f => f>=1000 ? f.toFixed(0) : f>=100 ? f.toFixed(1) : f.toFixed(2);
+    act.forEach(id=>{
+      const m = measureChannel(channels[id], windowSpan);
+      MEAS_ROWS.forEach(([lbl,k])=>{
+        let t = "-";
+        if(m){
+          const v = m[k];
+          if(k==="freq") t = v ? fmtF(v) : "-";
+          else if(k==="duty") t = (v!==null) ? Number(v).toFixed(0) : "-";
+          else t = v.toFixed(dec);
+        }
+        const kk = k+id;
+        if(measLast[kk] !== t){ measLast[kk] = t; measCells[kk].textContent = t; changed = true; }
+      });
+    });
+    // 값이 바뀌어도 글자 크기·표 높이는 그대로 유지 (측정값에 따라 패널 세로 길이가 흔들리지 않도록)
+  }
+  // 표가 카드 폭을 넘으면 글자 크기를 줄여 맞춤 (채널 수·값 길이에 따라 자동)
+  let measFit = false;
+  function fitMeasGrid(grid){
+    grid.style.fontSize = "";
+    let fs = 9.3;
+    while(grid.scrollWidth > grid.clientWidth + 1 && fs > 6){ fs -= 0.3; grid.style.fontSize = fs.toFixed(1) + "px"; }
+    measFit = false;
+  }
+  window.addEventListener("resize", ()=>{ measKey = ""; });   // 창 크기가 바뀌면 다음 갱신 때 한 번만 다시 맞춤
 
   /* ---------------- Cursor dragging ---------------- */
   let dragTarget = null;
